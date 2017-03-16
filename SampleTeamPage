@@ -1,0 +1,837 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>NCAA Statistics</title>
+    <link href="/assets/application-e326a9875b1d2e1ab0f0618409137d3f.css" media="all" rel="stylesheet" type="text/css" />
+    <script src="/assets/application-64576ab621c0e21b34a45d586057e376.js" type="text/javascript"></script>
+    <meta content="authenticity_token" name="csrf-param" />
+<meta content="ktt/IanziFDoMvnPncJU3qU7nfnIX4c72yXU3CMBPKQ=" name="csrf-token" />
+  </head>
+  <script>
+
+    function set_process_styles(fld, start_color, end_color){
+       $('#'+fld).effect('highlight', {color: '#99CC99'}, 6000);
+    }
+
+    var downImage = "/assets/down12.gif";
+    var rightImage = "/assets/right12.gif";
+
+    function highlight(div_id){
+      $(div_id).effect('highlight', {color: '#99CC99'}, 6000);
+    }
+
+    function show_hide_rows(attr_val, link_id){
+      $('#'+attr_val).toggle();
+      if ($('#'+attr_val).is(':visible')) {
+        $('#'+link_id).attr('src', downImage);
+      }else{
+        $('#'+link_id).attr('src', rightImage);
+      }
+    }
+
+    function mask(label){
+      $('body').mask(label);
+    }
+    function unmask(){
+      $('body').unmask();
+    }
+
+    var winHeight = "auto";
+    var winWidth = "auto";
+    var maxHeight = 700;
+    var maxWidth = 1400;
+    var minHeight = 100;
+    var minWidth = 200;
+
+    var modalOptions = {"width": winWidth,
+                        "height": winHeight,
+                        "maxHeight": maxHeight,
+                        "maxWidth": maxWidth,
+                        "minHeight": minHeight,
+                        "minWidth": minWidth};
+
+    function dialog(url, title){
+
+      $("#stats_app_dialog").dialog({modal:true, minWidth:minWidth, minHeight:minHeight, maxWidth:maxWidth, maxHeight:maxHeight, width:winWidth, height:winHeight, title:title, closeOnEscape: false});
+
+      modalOptions.title = title;
+
+      $("#stats_app_dialog").dialog("option", modalOptions);
+
+      $("#stats_app_dialog").html("Loading...");
+      $("#stats_app_dialog").load(url).dialog('open');
+    }
+
+
+  </script>
+  <body id="body" onload="if (top != self) { top.location=self.location; }">
+    <div id="header"><img alt="Titlebar_logo" height="81" src="/assets/titlebar_logo-d1d40bd2268e265b6a42cacb7bb117e9.jpg" style="float: left" width="104" />
+      <h1>
+        <span id="title1">NCAA</span><br/>
+        <span id="title2">Statistics</span>
+      </h1>
+
+
+      <div id="nav">
+  <ul>
+     <li id="notactive">
+       <a href="/rankings?academic_year=2017&amp;division=1.0&amp;sport_code=MBB"><span>National Rankings</span></a>
+    </li>
+     <li id="notactive">
+       <a href="/active_career_leaders/show_summary_from_rankings?academic_year=2017&amp;division=1.0&amp;sport_code=MBB"><span>Active Career Leaders</span></a>
+    </li>
+    <li id="notactive">
+      <a href="/team/schedule_list?academic_year=2017&amp;division=1.0&amp;id=12480&amp;sport_code=MBB"><span>Scoreboard</span></a>
+    </li>
+    <li id="team_search">
+      <script>
+  $(function() {
+    $( "#org_name" ).autocomplete({
+      source: '/team/search',
+      select: function( event, ui ) {
+        $("#org_id").val(ui.item.vid);
+        $("#id").val(ui.item.vid);
+        $('#sport_btn').click();
+      }
+    });
+  });
+</script>
+
+<span style="display:inline; float:right;">
+  <form accept-charset="UTF-8" action="/team/index" id="change_team_form" method="post" onsubmit="mask(&#x27;Loading&#x27;);" style="display:inline;"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="ktt/IanziFDoMvnPncJU3qU7nfnIX4c72yXU3CMBPKQ=" /></div>
+  <div style="display:none;">
+  <input id="sport_btn" name="commit" type="submit" value="Submit" />
+  </div>
+    <div id="team_autocomplete" class="ui-widget">
+      <span style="color: #ccc;">Team Search:</span>
+      <input id="org_name" name="org_name" style="width:200px" type="text" />
+      <input id="org_id" name="org_id" type="hidden" />
+    </div>
+</form></span>
+    </li>
+  <li>
+  <a href="http://twitter.com/ncaastats" target="TWITTER"><img alt="Twitter" height="17" src="/assets/twitter-6586be4273539dff7a95e70ebdf1a846.png" width="46" /></a>
+  </li>
+  </ul>
+</div>
+
+</div>
+
+    <div id="contentarea">
+       <div id="stats_app_dialog" style="display:none;">
+        </div>
+      <div id="message_box" class="team"  style="display: none" >
+        <span class="message_box_success"></span>
+        <span class="message_box_error"></span>
+      </div>
+      <script>
+  function submit_form(val){
+    curr_action = '/team/255/';
+    $('#change_sport_form').attr("action", curr_action + val);
+    $('#team_sport_btn').click();
+  }
+  $(function() {
+    $( "#org_sport_name" ).autocomplete({
+      source: '/team/12480/sport_sponsored_search',
+      select: function( event, ui ) {
+        $("#sport_search_org_id").val(ui.item.vid);
+        curr_action = '/team/255/'.replace("255", ui.item.vid);
+        $('#change_sport_form').attr("action", curr_action + $('#sport_list').val());
+        $('#team_sport_btn').click();
+      }
+    });
+  });
+</script>
+
+<div>
+  <form accept-charset="UTF-8" action="/team/255" id="change_sport_form" method="post" onsubmit="mask(&#x27;Loading&#x27;);"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="ktt/IanziFDoMvnPncJU3qU7nfnIX4c72yXU3CMBPKQ=" /></div>
+    <span class="org_heading">Georgia Tech Yellow Jackets (13-10)</span>
+    <select id="sport_list" name="id" onchange="submit_form(this.value);"><option value="12424">Football</option>
+<option value="12426">Women&#x27;s Volleyball</option>
+<option value="12480" selected="selected">Men&#x27;s Basketball</option>
+<option value="12500">Women&#x27;s Basketball</option>
+<option value="12560">Baseball</option>
+<option value="12580">Women&#x27;s Softball</option></select>
+
+  <div style="display:none;">
+  <input id="team_sport_btn" name="commit" type="submit" value="Submit" />
+  </div>
+  <span id="tst" style="float:right;">
+    <div id="team_sport_autocomplete" class="ui-widget">
+      Teams Sponsoring Men&#x27;s Basketball:
+      <input id="org_sport_name" name="org_sport_name" style="width:200px" type="text" />
+      <input id="sport_search_org_id" name="org_id" type="hidden" />
+    </div>
+  </span>
+</form></div>
+<br/>
+
+
+Schedule/Results |
+<a href="/team/255/roster/12480">Roster</a> |
+<a href="/team/255/stats/12480">Team Statistics</a> |
+<a href="/player/game_by_game?game_sport_year_ctl_id=12480&amp;org_id=255&amp;stats_player_seq=-100">Game By Game</a> |
+<!--
+<a href="/team/team_game_highs?org_id=255&amp;sport_year_ctl_id=12480">Game Highs</a> |
+<a href="/team/conf_game_highs?org_id=255&amp;sport_year_ctl_id=12480">Conf Game Highs</a> |
+-->
+<a href="/player/player_rank_history?game_sport_year_ctl_id=12480&amp;index_start=0&amp;org_id=255&amp;stat_seq_to_chart=0&amp;stats_player_seq=-100">Ranking Trends</a> |
+<a href="/player/team_player_rank_yearly_history?game_sport_year_ctl_id=12480&amp;index_start=0&amp;org_id=255&amp;stat_seq_to_chart=0&amp;stats_player_seq=-100">Team Final Trends</a> |
+<!--
+<a href="/team/inst_team_list/12480?conf_id=821&amp;division=1">Conf Team List</a> |
+<a href="/team/schedule_list?academic_year=2017&amp;division=1.0&amp;sport_code=MBB" class="skipMask" target="NCAA_SCHEDS">Scoreboard</a>
+<a href="/rankings/change_sport_year_div?academic_year=2017&amp;division=1&amp;sport_code=MBB">National Rankings</a>
+-->
+   <a href="/rankings/ranking_summary?academic_year=2017&amp;division=1&amp;org_id=255&amp;ranking_period=84&amp;sport_code=MBB">Ranking Summary</a>
+<!--
+<a href="http://web1.ncaa.org/stats/StatsSrv/rankings?sportCode=MBB&academicYear=2017">National Rankings</a>
+-->
+
+<table width="90%">
+  <tr>
+    <td colspan="2">
+            <br/>
+               <div>
+                     <span style="color: #000000;">2016-17</span>
+                   <span> | </span>
+                     <span><a href="/team/255/12260?game_sport_year_ctl_id=12260">2015-16</a></span>
+                     <!--
+                       <span><a href="/team/255/stats/12260" data-remote="true">2015-16</a></span>
+                     -->
+                   <span> | </span>
+                     <span><a href="/team/255/12020?game_sport_year_ctl_id=12020">2014-15</a></span>
+                     <!--
+                       <span><a href="/team/255/stats/12020" data-remote="true">2014-15</a></span>
+                     -->
+                   <span> | </span>
+                     <span><a href="/team/255/11540?game_sport_year_ctl_id=11540">2013-14</a></span>
+                     <!--
+                       <span><a href="/team/255/stats/11540" data-remote="true">2013-14</a></span>
+                     -->
+                   <span> | </span>
+                     <span><a href="/team/255/11220?game_sport_year_ctl_id=11220">2012-13</a></span>
+                     <!--
+                       <span><a href="/team/255/stats/11220" data-remote="true">2012-13</a></span>
+                     -->
+                   <span> | </span>
+                     <span><a href="/team/255/10740?game_sport_year_ctl_id=10740">2011-12</a></span>
+                     <!--
+                       <span><a href="/team/255/stats/10740" data-remote="true">2011-12</a></span>
+                     -->
+                   <span> | </span>
+                     <span><a href="/team/255/10440?game_sport_year_ctl_id=10440">2010-11</a></span>
+                     <!--
+                       <span><a href="/team/255/stats/10440" data-remote="true">2010-11</a></span>
+                     -->
+                   <span> | </span>
+                     <span><a href="/team/255/10260?game_sport_year_ctl_id=10260">2009-10</a></span>
+                     <!--
+                       <span><a href="/team/255/stats/10260" data-remote="true">2009-10</a></span>
+                     -->
+                   <span></span>
+              </div>
+
+    </td>
+  </tr>
+  <tr>
+   <td width="50%" valign="top">
+           <table class="mytable" width="100%" align="center">
+	     <tr class="heading">
+           <td colspan="3">Schedule/Results
+           </td>
+		 </tr>
+	     <tr class="grey_heading">
+		    <th width="8%">Date</th>
+		    <th width="20%" align="center">Opponent</th>
+		    <th width="6%" align="center">Result</th>
+		 </tr>
+          <tr >
+           <td class="smtext">11/11/2016</td>
+           <td class="smtext">
+
+                     <a href="/team/692/12480"> Tennessee Tech </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4231966?org_id=255" class="skipMask" target="TEAM_WIN">W 70 - 55 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">11/14/2016</td>
+           <td class="smtext">
+
+                     <a href="/team/665/12480"> Southern U. </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4235112?org_id=255" class="skipMask" target="TEAM_WIN">W 77 - 62 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">11/18/2016</td>
+           <td class="smtext">
+
+                     <a href="/team/519/12480"> Ohio </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4238383?org_id=255" class="skipMask" target="TEAM_WIN">L 61 - 67 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">11/22/2016</td>
+           <td class="smtext">
+
+                     <a href="/team/624/12480"> Sam Houston St. </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4243460?org_id=255" class="skipMask" target="TEAM_WIN">W 81 - 73 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">11/26/2016</td>
+           <td class="smtext">
+
+                     <a href="/team/718/12480"> Tulane </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4245637?org_id=255" class="skipMask" target="TEAM_WIN">W 82 - 68 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">11/29/2016</td>
+           <td class="smtext">
+
+                     <a href="/team/539/12480">@ Penn St. </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4247729?org_id=539" class="skipMask" target="TEAM_WIN">L 60 - 67 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">12/03/2016</td>
+           <td class="smtext">
+
+                     <a href="/team/694/12480">@ Tennessee </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4250074?org_id=694" class="skipMask" target="TEAM_WIN">L 58 - 81 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">12/07/2016</td>
+           <td class="smtext">
+
+                     <a href="/team/740/12480">@ VCU </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4261164?org_id=740" class="skipMask" target="TEAM_WIN">W 76 - 73 (1OT)</a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">12/18/2016</td>
+           <td class="smtext">
+
+                     <a href="/team/17/12480"> Alcorn </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4261110?org_id=255" class="skipMask" target="TEAM_WIN">W 74 - 50 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">12/20/2016</td>
+           <td class="smtext">
+
+                     <a href="/team/257/12480"> Georgia </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4260813?org_id=255" class="skipMask" target="TEAM_WIN">L 43 - 60 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">12/22/2016</td>
+           <td class="smtext">
+
+                     <a href="/team/2915/12480"> Wofford </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4261602?org_id=255" class="skipMask" target="TEAM_WIN">W 76 - 72 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">12/28/2016</td>
+           <td class="smtext">
+
+                     <a href="/team/488/12480"> N.C. A&T </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4262241?org_id=255" class="skipMask" target="TEAM_WIN">W 59 - 52 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">12/31/2016</td>
+           <td class="smtext">
+
+                     <a href="/team/457/12480"> North Carolina </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4263335?org_id=255" class="skipMask" target="TEAM_WIN">W 75 - 63 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">01/04/2017</td>
+           <td class="smtext">
+
+                     <a href="/team/193/12480">@ Duke </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4265170?org_id=193" class="skipMask" target="TEAM_WIN">L 57 - 110 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">01/07/2017</td>
+           <td class="smtext">
+
+                     <a href="/team/367/12480"> Louisville </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4266531?org_id=255" class="skipMask" target="TEAM_WIN">L 50 - 65 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">01/12/2017</td>
+           <td class="smtext">
+
+                     <a href="/team/147/12480"> Clemson </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4269087?org_id=255" class="skipMask" target="TEAM_WIN">W 75 - 63 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">01/15/2017</td>
+           <td class="smtext">
+
+                     <a href="/team/490/12480">@ North Carolina St. </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4270924?org_id=490" class="skipMask" target="TEAM_WIN">W 86 - 76 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">01/18/2017</td>
+           <td class="smtext">
+
+                     <a href="/team/742/12480">@ Virginia Tech </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4272313?org_id=742" class="skipMask" target="TEAM_WIN">L 61 - 62 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">01/21/2017</td>
+           <td class="smtext">
+
+                     <a href="/team/746/12480">@ Virginia </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4273317?org_id=746" class="skipMask" target="TEAM_WIN">L 49 - 62 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">01/25/2017</td>
+           <td class="smtext">
+
+                     <a href="/team/234/12480"> Florida St. </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4275498?org_id=255" class="skipMask" target="TEAM_WIN">W 78 - 56 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">01/28/2017</td>
+           <td class="smtext">
+
+                     <a href="/team/513/12480"> Notre Dame </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4276564?org_id=255" class="skipMask" target="TEAM_WIN">W 62 - 60 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">02/01/2017</td>
+           <td class="smtext">
+
+                     <a href="/team/147/12480">@ Clemson </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4279104?org_id=147" class="skipMask" target="TEAM_WIN">L 62 - 74 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">02/04/2017</td>
+           <td class="smtext">
+
+                     <a href="/team/749/12480">@ Wake Forest </a>
+           </td>
+           <td class="smtext" nowrap>
+                <a href="/game/index/4280689?org_id=749" class="skipMask" target="TEAM_WIN">L 69 - 81 </a>
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">02/07/2017</td>
+           <td class="smtext">
+
+                 Tusculum
+           </td>
+           <td class="smtext" nowrap>
+               -
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">02/11/2017</td>
+           <td class="smtext">
+
+                 Boston College
+           </td>
+           <td class="smtext" nowrap>
+               -
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">02/15/2017</td>
+           <td class="smtext">
+
+                 @ Miami (FL)
+           </td>
+           <td class="smtext" nowrap>
+               -
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">02/19/2017</td>
+           <td class="smtext">
+
+                 Syracuse
+           </td>
+           <td class="smtext" nowrap>
+               -
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">02/21/2017</td>
+           <td class="smtext">
+
+                 North Carolina St.
+           </td>
+           <td class="smtext" nowrap>
+               -
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">02/26/2017</td>
+           <td class="smtext">
+
+                 @ Notre Dame
+           </td>
+           <td class="smtext" nowrap>
+               -
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">02/28/2017</td>
+           <td class="smtext">
+
+                 Pittsburgh
+           </td>
+           <td class="smtext" nowrap>
+               -
+           </td>
+
+
+	     </tr>
+
+          <tr >
+           <td class="smtext">03/04/2017</td>
+           <td class="smtext">
+
+                 @ Syracuse
+           </td>
+           <td class="smtext" nowrap>
+               -
+           </td>
+
+
+	     </tr>
+
+	  </table>
+   </td>
+
+   <td width="50%" valign="top">
+     <table class="mytable" width="100%">
+  <tr class="heading">
+    <td colspan="3">Team Stats - Through games 02/04/2017</td>
+  </tr>
+  <tr class="grey_heading">
+    <td>Stat</td>
+    <td>Rank</td>
+    <td>Value</td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=145.0" class="skipMask" target="Rankings">Scoring Offense</a></td>
+    <td align="right">301</td>
+    <td align="right">
+      67.0
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=146.0" class="skipMask" target="Rankings">Scoring Defense</a></td>
+    <td align="right">62</td>
+    <td align="right">
+      67.5
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=147.0" class="skipMask" target="Rankings">Scoring Margin</a></td>
+    <td align="right">220</td>
+    <td align="right">
+      -0.5
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=151.0" class="skipMask" target="Rankings">Rebound Margin</a></td>
+    <td align="right">182</td>
+    <td align="right">
+      0.6
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=216.0" class="skipMask" target="Rankings">Assists Per Game</a></td>
+    <td align="right">93</td>
+    <td align="right">
+      15.0
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=214.0" class="skipMask" target="Rankings">Blocked Shots Per Game</a></td>
+    <td align="right">3</td>
+    <td align="right">
+      6.3
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=215.0" class="skipMask" target="Rankings">Steals Per Game</a></td>
+    <td align="right">181</td>
+    <td align="right">
+      6.2
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=519.0" class="skipMask" target="Rankings">Turnover Margin</a></td>
+    <td align="right">T-267</td>
+    <td align="right">
+      -1.4
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=474.0" class="skipMask" target="Rankings">Assist Turnover Ratio</a></td>
+    <td align="right">151</td>
+    <td align="right">
+      1.06
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=148.0" class="skipMask" target="Rankings">Field-Goal Percentage</a></td>
+    <td align="right">249</td>
+    <td align="right">
+      42.9
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=149.0" class="skipMask" target="Rankings">Field-Goal Percentage Defense</a></td>
+    <td align="right">24</td>
+    <td align="right">
+      39.8
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=153.0" class="skipMask" target="Rankings">Three-Point Field Goals Per Game</a></td>
+    <td align="right">344</td>
+    <td align="right">
+      4.3
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=152.0" class="skipMask" target="Rankings">Three-Point Field-Goal Percentage</a></td>
+    <td align="right">216</td>
+    <td align="right">
+      34.1
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=150.0" class="skipMask" target="Rankings">Free-Throw Percentage</a></td>
+    <td align="right">202</td>
+    <td align="right">
+      68.7
+    </td>
+  </tr>
+  <tr>
+    <td><a href="/rankings?academic_year=2017.0&amp;division=1.0&amp;ranking_period=84&amp;sport_code=MBB&amp;stat_seq=168.0" class="skipMask" target="Rankings">Won-Lost Percentage</a></td>
+    <td align="right">T-146</td>
+    <td align="right">
+      56.5
+    </td>
+  </tr>
+  <tr class="grey_heading">
+    <td colspan="3"><a href="/rankings/ranking_summary?academic_year=2017.0&amp;division=1.0&amp;game_high=N&amp;org_id=255&amp;ranking_period=84&amp;sport_code=MBB&amp;team_individual=T" class="skipMask" target="RANKINGS_WIN">View Complete Ranking Summary</a></td>
+  </tr>
+</table>
+<br/>
+
+     <table class="mytable" width="100%">
+  <tr class="heading">
+    <td colspan="3">Individual Leaders</td>
+  </tr>
+  <tr class="grey_heading">
+    <td>Stat</td>
+    <td>Player</td>
+    <td>Value</td>
+  </tr>
+    <tr>
+      <td>PTS</td>
+      <td>
+        <a href="/player/index?game_sport_year_ctl_id=12480&amp;stats_player_seq=1845894">Josh Okogie</a>
+      </td>
+      <td align="right">355</td>
+    </tr>
+   <tr class="grey_heading">
+     <td colspan="3"><a href="/team/255/stats/12480?controler=team">Team Stats</a></td>
+   </tr>
+</table>
+
+   </td>
+  </tr>
+</table>
+
+
+    </div>
+
+    <div class="footer"></div>
+
+  </body>
+  <script>
+      //ui-datepicker = calendar month prev/next buttons,
+      //ui-corner-all = autocomplete dropdown results
+      //paginate_button = datatables
+    function skipMask(obj){
+      if (obj.hasClass('skipMask') || obj.hasClass('ui-datepicker-prev') || obj.hasClass('ui-datepicker-next') || obj.hasClass('ui-corner-all') || obj.hasClass('paginate_button') ){
+        return true;
+      }else{
+        return false;
+      }
+    }
+
+    $(document).ajaxComplete(function(){
+      unmask();
+    });
+    $(document).on('click', 'a', function(){
+      if (skipMask($(this))){
+        return;
+      }else{
+        mask('Loading');
+      }
+    });
+    $(document).on('click', 'input.green', function(){
+      if (skipMask($(this))){
+        return;
+      }else{
+        mask('Loading');
+      }
+    });
+  </script>
+</html>

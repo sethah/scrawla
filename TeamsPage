@@ -1,0 +1,2118 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>NCAA Statistics</title>
+    <link href="/assets/application-e326a9875b1d2e1ab0f0618409137d3f.css" media="all" rel="stylesheet" type="text/css" />
+    <script src="/assets/application-64576ab621c0e21b34a45d586057e376.js" type="text/javascript"></script>
+    <meta content="authenticity_token" name="csrf-param" />
+<meta content="lhJ5ndhVunRkFwkYCDBzdk3MECahamxUkHAh9g7Prqo=" name="csrf-token" />
+  </head>
+  <script>
+
+    function set_process_styles(fld, start_color, end_color){
+       $('#'+fld).effect('highlight', {color: '#99CC99'}, 6000);
+    }
+
+    var downImage = "/assets/down12.gif";
+    var rightImage = "/assets/right12.gif";
+
+    function highlight(div_id){
+      $(div_id).effect('highlight', {color: '#99CC99'}, 6000);
+    }
+
+    function show_hide_rows(attr_val, link_id){
+      $('#'+attr_val).toggle();
+      if ($('#'+attr_val).is(':visible')) {
+        $('#'+link_id).attr('src', downImage);
+      }else{
+        $('#'+link_id).attr('src', rightImage);
+      }
+    }
+
+    function mask(label){
+      $('body').mask(label);
+    }
+    function unmask(){
+      $('body').unmask();
+    }
+
+    var winHeight = "auto";
+    var winWidth = "auto";
+    var maxHeight = 700;
+    var maxWidth = 1400;
+    var minHeight = 100;
+    var minWidth = 200;
+
+    var modalOptions = {"width": winWidth,
+                        "height": winHeight,
+                        "maxHeight": maxHeight,
+                        "maxWidth": maxWidth,
+                        "minHeight": minHeight,
+                        "minWidth": minWidth};
+
+    function dialog(url, title){
+
+      $("#stats_app_dialog").dialog({modal:true, minWidth:minWidth, minHeight:minHeight, maxWidth:maxWidth, maxHeight:maxHeight, width:winWidth, height:winHeight, title:title, closeOnEscape: false});
+
+      modalOptions.title = title;
+
+      $("#stats_app_dialog").dialog("option", modalOptions);
+
+      $("#stats_app_dialog").html("Loading...");
+      $("#stats_app_dialog").load(url).dialog('open');
+    }
+
+
+  </script>
+  <body id="body" onload="if (top != self) { top.location=self.location; }">
+    <div id="header"><img alt="Titlebar_logo" height="81" src="/assets/titlebar_logo-d1d40bd2268e265b6a42cacb7bb117e9.jpg" style="float: left" width="104" />
+      <h1>
+        <span id="title1">NCAA</span><br/>
+        <span id="title2">Statistics</span>
+      </h1>
+
+
+      <div id="nav">
+  <ul>
+     <li id="notactive">
+       <a href="/rankings?academic_year=2017&amp;division=1&amp;sport_code=MBB"><span>National Rankings</span></a>
+    </li>
+     <li id="notactive">
+       <a href="/active_career_leaders/show_summary_from_rankings?academic_year=2017&amp;division=1&amp;sport_code=MBB"><span>Active Career Leaders</span></a>
+    </li>
+    <li id="active">
+      <a href="/team/schedule_list?academic_year=2017&amp;division=1&amp;id=12480&amp;sport_code=MBB"><span>Scoreboard</span></a>
+    </li>
+    <li id="team_search">
+      <script>
+  $(function() {
+    $( "#org_name" ).autocomplete({
+      source: '/team/search',
+      select: function( event, ui ) {
+        $("#org_id").val(ui.item.vid);
+        $("#id").val(ui.item.vid);
+        $('#sport_btn').click();
+      }
+    });
+  });
+</script>
+
+<span style="display:inline; float:right;">
+  <form accept-charset="UTF-8" action="/team/index" id="change_team_form" method="post" onsubmit="mask(&#x27;Loading&#x27;);" style="display:inline;"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="lhJ5ndhVunRkFwkYCDBzdk3MECahamxUkHAh9g7Prqo=" /></div>
+  <div style="display:none;">
+  <input id="sport_btn" name="commit" type="submit" value="Submit" />
+  </div>
+    <div id="team_autocomplete" class="ui-widget">
+      <span style="color: #ccc;">Team Search:</span>
+      <input id="org_name" name="org_name" style="width:200px" type="text" />
+      <input id="org_id" name="org_id" type="hidden" />
+    </div>
+</form></span>
+    </li>
+  <li>
+  <a href="http://twitter.com/ncaastats" target="TWITTER"><img alt="Twitter" height="17" src="/assets/twitter-6586be4273539dff7a95e70ebdf1a846.png" width="46" /></a>
+  </li>
+  </ul>
+</div>
+
+</div>
+
+    <div id="contentarea">
+       <div id="stats_app_dialog" style="display:none;">
+        </div>
+      <div id="message_box" class="team"  style="display: none" >
+        <span class="message_box_success"></span>
+        <span class="message_box_error"></span>
+      </div>
+
+<script language="javascript">
+      function changeDivisions(val){
+	     $('#params_form_division').val(val);
+	     document.params_form.submit();
+      }
+
+      function changeYears(val){
+         if ( $('#params_form_academic_year').val() != val ){
+	        $('#params_form_schedule_date').val('');
+         }
+	     $('#params_form_academic_year').val(val);
+	     document.params_form.submit();
+      }
+
+      function changeSports(val){
+	     $('#params_form_sport_code').val(val);
+	     document.params_form.submit();
+      }
+      function changeConference(val){
+	     $('#params_form_conf_id').val(val);
+	     document.params_form.submit();
+      }
+      function changeDate(val){
+	     $('#params_form_schedule_date').val(val);
+	     document.params_form.submit();
+      }
+</script>
+<form name="params_form" action="/team/schedule_list" method="post">
+  <input id="params_form_sport_code" type="hidden" name="sport_code" value="MBB">
+  <input id="params_form_academic_year" type="hidden" name="academic_year" value="2017">
+  <input id="params_form_division" type="hidden" name="division" value="1">
+  <input id="params_form_conf_id" type="hidden" name="conf_id" value="-1">
+  <input id="params_form_schedule_date" type="hidden" name="schedule_date" value="">
+</form>
+
+<div class="grey_header_menu">
+
+<div id="nav_bar">
+  <div id="primary_nav_wrap">
+		<ul class="level1" id="root">
+		  <li>
+		    <a href="#" class="skipMask">Men&#x27;s Basketball</a>
+		    <ul class="level2">
+		 		    <li><a href="javascript:changeSports('MBA');">Baseball</a></li>
+		 		    <li><a href="javascript:changeSports('MBB');">Men&#x27;s Basketball</a></li>
+		 		    <li><a href="javascript:changeSports('MFB');">Football</a></li>
+		 		    <li><a href="javascript:changeSports('MIH');">Men&#x27;s Ice Hockey</a></li>
+		 		    <li><a href="javascript:changeSports('MLA');">Men&#x27;s Lacrosse</a></li>
+		 		    <li><a href="javascript:changeSports('MSO');">Men&#x27;s Soccer</a></li>
+		 		    <li><a href="javascript:changeSports('MTE');">Men&#x27;s Tennis</a></li>
+		 		    <li><a href="javascript:changeSports('MVB');">Men&#x27;s Volleyball</a></li>
+		 		    <li><a href="javascript:changeSports('WBB');">Women&#x27;s Basketball</a></li>
+		 		    <li><a href="javascript:changeSports('WFH');">Field Hockey</a></li>
+		 		    <li><a href="javascript:changeSports('WIH');">Women&#x27;s Ice Hockey</a></li>
+		 		    <li><a href="javascript:changeSports('WLA');">Women&#x27;s Lacrosse</a></li>
+		 		    <li><a href="javascript:changeSports('WSB');">Women&#x27;s Softball</a></li>
+		 		    <li><a href="javascript:changeSports('WSO');">Women&#x27;s Soccer</a></li>
+		 		    <li><a href="javascript:changeSports('WSV');">Women&#x27;s Beach Volleyball</a></li>
+		 		    <li><a href="javascript:changeSports('WTE');">Women&#x27;s Tennis</a></li>
+		 		    <li><a href="javascript:changeSports('WVB');">Women&#x27;s Volleyball</a></li>
+		    </ul>
+		  </li>
+		  <li class="sep">|</li>
+ 		  <li>
+			<a href="#" class="skipMask">2016-17</a>
+			<ul class="level2">
+				<li><a href="javascript:changeYears(2017);">2016-17</a></li>
+				<li><a href="javascript:changeYears(2016);">2015-16</a></li>
+				<li><a href="javascript:changeYears(2015);">2014-15</a></li>
+				<li><a href="javascript:changeYears(2014);">2013-14</a></li>
+				<li><a href="javascript:changeYears(2013);">2012-13</a></li>
+				<li><a href="javascript:changeYears(2012);">2011-12</a></li>
+				<li><a href="javascript:changeYears(2011);">2010-11</a></li>
+				<li><a href="javascript:changeYears(2010);">2009-10</a></li>
+			</ul>
+		  </li>
+  	      <li class="sep">|</li>
+ 		  <li>
+			<a href="#" class="skipMask">I</a>
+			<ul class="level2">
+				<li><a href="javascript:changeDivisions(1);">I</a></li>
+				<li><a href="javascript:changeDivisions(2);">II</a></li>
+				<li><a href="javascript:changeDivisions(3);">III</a></li>
+			</ul>
+		  </li>
+		  </li>
+  	      <li class="sep">|</li>
+ 		  <li>
+			<a href="#" class="skipMask">ALL TEAMS</a>
+			<ul class="level2">
+			   <li><a href="javascript:changeConference(-1);">ALL TEAMS</a></li>
+				<li><a href="javascript:changeConference(823.0);">AAC</a></li>
+				<li><a href="javascript:changeConference(920.0);">ASUN</a></li>
+				<li><a href="javascript:changeConference(845.0);">America East</a></li>
+				<li><a href="javascript:changeConference(820.0);">Atlantic 10</a></li>
+				<li><a href="javascript:changeConference(821.0);">Atlantic Coast</a></li>
+				<li><a href="javascript:changeConference(25354.0);">Big 12</a></li>
+				<li><a href="javascript:changeConference(30184.0);">Big East</a></li>
+				<li><a href="javascript:changeConference(825.0);">Big Sky</a></li>
+				<li><a href="javascript:changeConference(826.0);">Big South</a></li>
+				<li><a href="javascript:changeConference(827.0);">Big Ten</a></li>
+				<li><a href="javascript:changeConference(904.0);">Big West</a></li>
+				<li><a href="javascript:changeConference(837.0);">Colonial</a></li>
+				<li><a href="javascript:changeConference(24312.0);">Conference USA</a></li>
+				<li><a href="javascript:changeConference(881.0);">Horizon</a></li>
+				<li><a href="javascript:changeConference(865.0);">Ivy League</a></li>
+				<li><a href="javascript:changeConference(871.0);">Metro Atlantic</a></li>
+				<li><a href="javascript:changeConference(875.0);">Mid-American</a></li>
+				<li><a href="javascript:changeConference(876.0);">Mid-Eastern</a></li>
+				<li><a href="javascript:changeConference(884.0);">Missouri Valley</a></li>
+				<li><a href="javascript:changeConference(5486.0);">Mountain West</a></li>
+				<li><a href="javascript:changeConference(846.0);">Northeast</a></li>
+				<li><a href="javascript:changeConference(902.0);">OVC</a></li>
+				<li><a href="javascript:changeConference(905.0);">Pac-12</a></li>
+				<li><a href="javascript:changeConference(838.0);">Patriot</a></li>
+				<li><a href="javascript:changeConference(911.0);">Southeastern</a></li>
+				<li><a href="javascript:changeConference(912.0);">Southern</a></li>
+				<li><a href="javascript:changeConference(914.0);">Southland</a></li>
+				<li><a href="javascript:changeConference(916.0);">Southwestern</a></li>
+				<li><a href="javascript:changeConference(819.0);">Summit League</a></li>
+				<li><a href="javascript:changeConference(818.0);">Sun Belt</a></li>
+				<li><a href="javascript:changeConference(922.0);">West Coast</a></li>
+				<li><a href="javascript:changeConference(923.0);">Western Athletic</a></li>
+			</ul>
+		  </li>
+		  </li>
+  	 </ul>
+  </div>
+</div>
+</div>
+
+
+<br/>
+<br/>
+<!-- tabs -->
+<ul class="css-tabs">
+  <li><a href="/team/inst_team_list?academic_year=2017&amp;conf_id=-1&amp;division=1&amp;sport_code=MBB" id="available_teams_tab">Available Teams</a></li>
+  <li><a href="/team/schedule_list?academic_year=2017&amp;conf_id=-1&amp;division=1&amp;sport_code=MBB" id="scoreboard_tab">Scoreboard</a></li>
+</ul>
+
+
+
+
+<!-- single pane. it is always visible -->
+<div class="css-panes">
+  <div style="display:block">
+<table width="95%" align="center">
+	<tr>
+       <td valign="top">
+	      <table width="100%">
+             <tr>
+	            <td>
+                <a href="/team/26172/12480">A&amp;M-Corpus Chris</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/2/12480">Abilene Christian</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/721/12480">Air Force</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/5/12480">Akron</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/8/12480">Alabama</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/6/12480">Alabama A&amp;M</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/7/12480">Alabama St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/14/12480">Albany (NY)</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/17/12480">Alcorn</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/23/12480">American</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/27/12480">Appalachian St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/29/12480">Arizona</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/28/12480">Arizona St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/2678/12480">Ark.-Pine Bluff</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/31/12480">Arkansas</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/30/12480">Arkansas St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/725/12480">Army West Point</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/37/12480">Auburn</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/43/12480">Austin Peay</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/77/12480">BYU</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/47/12480">Ball St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/51/12480">Baylor</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/14927/12480">Belmont</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/61/12480">Bethune-Cookman</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/62/12480">Binghamton</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/66/12480">Boise St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/67/12480">Boston College</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/68/12480">Boston U.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/71/12480">Bowling Green</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/72/12480">Bradley</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/80/12480">Brown</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/81/12480">Bryant</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/83/12480">Bucknell</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/86/12480">Buffalo</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/87/12480">Butler</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/94/12480">CSU Bakersfield</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/101/12480">CSUN</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/90/12480">Cal Poly</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/97/12480">Cal St. Fullerton</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/107/12480">California</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/115/12480">Campbell</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/116/12480">Canisius</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/1004/12480">Central Ark.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/127/12480">Central Conn. St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/129/12480">Central Mich.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/48/12480">Charleston So.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/458/12480">Charlotte</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/693/12480">Chattanooga</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/136/12480">Chicago St.</a>
+                </td>
+             </tr>
+         </table>
+     </td>
+       <td valign="top">
+	      <table width="100%">
+             <tr>
+	            <td>
+                <a href="/team/140/12480">Cincinnati</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/147/12480">Clemson</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/148/12480">Cleveland St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/149/12480">Coastal Caro.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/1014/12480">Col. of Charleston</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/153/12480">Colgate</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/157/12480">Colorado</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/156/12480">Colorado St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/158/12480">Columbia</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/165/12480">Coppin St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/167/12480">Cornell</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/169/12480">Creighton</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/172/12480">Dartmouth</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/173/12480">Davidson</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/175/12480">Dayton</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/176/12480">DePaul</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/180/12480">Delaware</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/178/12480">Delaware St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/183/12480">Denver</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/184/12480">Detroit Mercy</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/189/12480">Drake</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/191/12480">Drexel</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/193/12480">Duke</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/194/12480">Duquesne</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/198/12480">ETSU</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/196/12480">East Carolina</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/201/12480">Eastern Ill.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/202/12480">Eastern Ky.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/204/12480">Eastern Mich.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/207/12480">Eastern Wash.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/1068/12480">Elon</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/219/12480">Evansville</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/28755/12480">FGCU</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/231/12480">FIU</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/220/12480">Fairfield</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/222/12480">Fairleigh Dickinson</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/229/12480">Fla. Atlantic</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/235/12480">Florida</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/228/12480">Florida A&amp;M</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/234/12480">Florida St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/236/12480">Fordham</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/308/12480">Fort Wayne</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/96/12480">Fresno St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/244/12480">Furman</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/253/12480">Ga. Southern</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/1092/12480">Gardner-Webb</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/248/12480">George Mason</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/249/12480">George Washington</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/251/12480">Georgetown</a>
+                </td>
+             </tr>
+         </table>
+     </td>
+       <td valign="top">
+	      <table width="100%">
+             <tr>
+	            <td>
+                <a href="/team/257/12480">Georgia</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/254/12480">Georgia St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/255/12480">Georgia Tech</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/260/12480">Gonzaga</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/261/12480">Grambling</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/1104/12480">Grand Canyon</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/794/12480">Green Bay</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/270/12480">Hampton</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/272/12480">Hartford</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/275/12480">Harvard</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/277/12480">Hawaii</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/19651/12480">High Point</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/283/12480">Hofstra</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/285/12480">Holy Cross</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/288/12480">Houston</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/287/12480">Houston Baptist</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/290/12480">Howard</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/2699/12480">IUPUI</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/295/12480">Idaho</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/294/12480">Idaho St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/302/12480">Ill.-Chicago</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/301/12480">Illinois</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/299/12480">Illinois St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/2743/12480">Incarnate Word</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/306/12480">Indiana</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/305/12480">Indiana St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/310/12480">Iona</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/312/12480">Iowa</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/311/12480">Iowa St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/314/12480">Jackson St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/316/12480">Jacksonville</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/315/12480">Jacksonville St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/317/12480">James Madison</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/328/12480">Kansas</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/327/12480">Kansas St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/1157/12480">Kennesaw St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/331/12480">Kent St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/334/12480">Kentucky</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/361/12480">LIU Brooklyn</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/365/12480">LSU</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/340/12480">La Salle</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/498/12480">La.-Monroe</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/342/12480">Lafayette</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/346/12480">Lamar University</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/352/12480">Lehigh</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/355/12480">Liberty</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/28600/12480">Lipscomb</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/32/12480">Little Rock</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/99/12480">Long Beach St.</a>
+                </td>
+             </tr>
+         </table>
+     </td>
+       <td valign="top">
+	      <table width="100%">
+             <tr>
+	            <td>
+                <a href="/team/363/12480">Longwood</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/671/12480">Louisiana</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/366/12480">Louisiana Tech</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/367/12480">Louisville</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/371/12480">Loyola Chicago</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/369/12480">Loyola Maryland</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/370/12480">Loyola Marymount</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/380/12480">Maine</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/381/12480">Manhattan</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/386/12480">Marist</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/387/12480">Marquette</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/388/12480">Marshall</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/392/12480">Maryland</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/400/12480">Massachusetts</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/402/12480">McNeese</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/404/12480">Memphis</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/406/12480">Mercer</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/415/12480">Miami (FL)</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/414/12480">Miami (OH)</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/418/12480">Michigan</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/416/12480">Michigan St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/419/12480">Middle Tenn.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/797/12480">Milwaukee</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/428/12480">Minnesota</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/430/12480">Mississippi St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/432/12480">Mississippi Val.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/434/12480">Missouri</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/669/12480">Missouri St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/439/12480">Monmouth</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/441/12480">Montana</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/440/12480">Montana St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/444/12480">Morehead St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/446/12480">Morgan St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/450/12480">Mt. St. Mary&#x27;s</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/454/12480">Murray St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/488/12480">N.C. A&amp;T</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/489/12480">N.C. Central</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/471/12480">NJIT</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/726/12480">Navy</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/463/12480">Nebraska</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/466/12480">Nevada</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/469/12480">New Hampshire</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/473/12480">New Mexico</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/472/12480">New Mexico St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/474/12480">New Orleans</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/482/12480">Niagara</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/483/12480">Nicholls St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/485/12480">Norfolk St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/457/12480">North Carolina</a>
+                </td>
+             </tr>
+         </table>
+     </td>
+       <td valign="top">
+	      <table width="100%">
+             <tr>
+	            <td>
+                <a href="/team/490/12480">North Carolina St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/494/12480">North Dakota</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/493/12480">North Dakota St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/2711/12480">North Florida</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/497/12480">North Texas</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/500/12480">Northeastern</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/501/12480">Northern Ariz.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/502/12480">Northern Colo.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/503/12480">Northern Ill.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/505/12480">Northern Ky.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/509/12480">Northwestern</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/508/12480">Northwestern St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/513/12480">Notre Dame</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/514/12480">Oakland</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/519/12480">Ohio</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/518/12480">Ohio St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/522/12480">Oklahoma</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/521/12480">Oklahoma St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/523/12480">Old Dominion</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/433/12480">Ole Miss</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/464/12480">Omaha</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/527/12480">Oral Roberts</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/529/12480">Oregon</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/528/12480">Oregon St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/534/12480">Pacific</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/540/12480">Penn</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/539/12480">Penn St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/541/12480">Pepperdine</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/545/12480">Pittsburgh</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/551/12480">Portland</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/550/12480">Portland St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/553/12480">Prairie View</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/1320/12480">Presbyterian</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/554/12480">Princeton</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/556/12480">Providence</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/559/12480">Purdue</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/562/12480">Quinnipiac</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/563/12480">Radford</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/572/12480">Rhode Island</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/574/12480">Rice</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/575/12480">Richmond</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/576/12480">Rider</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/579/12480">Robert Morris</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/587/12480">Rutgers</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/676/12480">SFA</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/660/12480">SIUE</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/663/12480">SMU</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/102/12480">Sacramento St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/590/12480">Sacred Heart</a>
+                </td>
+             </tr>
+         </table>
+     </td>
+       <td valign="top">
+	      <table width="100%">
+             <tr>
+	            <td>
+                <a href="/team/600/12480">Saint Francis (PA)</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/606/12480">Saint Joseph&#x27;s</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/609/12480">Saint Louis</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/617/12480">Saint Peter&#x27;s</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/624/12480">Sam Houston St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/625/12480">Samford</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/627/12480">San Diego</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/626/12480">San Diego St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/629/12480">San Francisco</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/630/12480">San Jose St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/631/12480">Santa Clara</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/632/12480">Savannah St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/1356/12480">Seattle U</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/635/12480">Seton Hall</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/639/12480">Siena</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/646/12480">South Ala.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/648/12480">South Carolina</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/647/12480">South Carolina St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/650/12480">South Dakota</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/649/12480">South Dakota St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/651/12480">South Fla.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/654/12480">Southeast Mo. St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/655/12480">Southeastern La.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/657/12480">Southern California</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/659/12480">Southern Ill.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/664/12480">Southern Miss.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/665/12480">Southern U.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/667/12480">Southern Utah</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/596/12480">St. Bonaventure</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/599/12480">St. Francis Brooklyn</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/603/12480">St. John&#x27;s (NY)</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/610/12480">St. Mary&#x27;s (CA)</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/674/12480">Stanford</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/678/12480">Stetson</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/683/12480">Stony Brook</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/688/12480">Syracuse</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/698/12480">TCU</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/690/12480">Temple</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/694/12480">Tennessee</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/691/12480">Tennessee St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/692/12480">Tennessee Tech</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/703/12480">Texas</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/697/12480">Texas A&amp;M</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/699/12480">Texas Southern</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/670/12480">Texas St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/700/12480">Texas Tech</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/141/12480">The Citadel</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/709/12480">Toledo</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/711/12480">Towson</a>
+                </td>
+             </tr>
+         </table>
+     </td>
+       <td valign="top">
+	      <table width="100%">
+             <tr>
+	            <td>
+                <a href="/team/716/12480">Troy</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/718/12480">Tulane</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/719/12480">Tulsa</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/9/12480">UAB</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/108/12480">UC Davis</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/109/12480">UC Irvine</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/111/12480">UC Riverside</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/104/12480">UC Santa Barbara</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/128/12480">UCF</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/110/12480">UCLA</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/164/12480">UConn</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/391/12480">UMBC</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/393/12480">UMES</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/2707/12480">UMKC</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/368/12480">UMass Lowell</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/456/12480">UNC Asheville</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/459/12480">UNCG</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/460/12480">UNCW</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/504/12480">UNI</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/465/12480">UNLV</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/10411/12480">USC Upstate</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/702/12480">UT Arlington</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/695/12480">UT Martin</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/704/12480">UTEP</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/536/12480">UTRGV</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/706/12480">UTSA</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/732/12480">Utah</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/731/12480">Utah St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/30024/12480">Utah Valley</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/740/12480">VCU</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/741/12480">VMI</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/735/12480">Valparaiso</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/736/12480">Vanderbilt</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/738/12480">Vermont</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/739/12480">Villanova</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/746/12480">Virginia</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/742/12480">Virginia Tech</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/748/12480">Wagner</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/749/12480">Wake Forest</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/756/12480">Washington</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/754/12480">Washington St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/758/12480">Weber St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/768/12480">West Virginia</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/769/12480">Western Caro.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/771/12480">Western Ill.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/772/12480">Western Ky.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/774/12480">Western Mich.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/782/12480">Wichita St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/786/12480">William &amp; Mary</a>
+                </td>
+             </tr>
+         </table>
+     </td>
+       <td valign="top">
+	      <table width="100%">
+             <tr>
+	            <td>
+                <a href="/team/792/12480">Winthrop</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/796/12480">Wisconsin</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/2915/12480">Wofford</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/810/12480">Wright St.</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/811/12480">Wyoming</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/812/12480">Xavier</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/813/12480">Yale</a>
+                </td>
+             </tr>
+             <tr>
+	            <td>
+                <a href="/team/817/12480">Youngstown St.</a>
+                </td>
+             </tr>
+      </table>
+     </td>
+   </tr>
+</table>
+  </div>
+</div>
+
+<script>
+
+
+$("#available_teams_tab").addClass("current");
+
+$(function() {
+
+	$("ul.css-tabs").tabs("div.css-panes > div", {effect: 'ajax'});
+
+});
+</script>
+
+<br/>
+
+    </div>
+
+    <div class="footer"></div>
+
+  </body>
+  <script>
+      //ui-datepicker = calendar month prev/next buttons,
+      //ui-corner-all = autocomplete dropdown results
+      //paginate_button = datatables
+    function skipMask(obj){
+      if (obj.hasClass('skipMask') || obj.hasClass('ui-datepicker-prev') || obj.hasClass('ui-datepicker-next') || obj.hasClass('ui-corner-all') || obj.hasClass('paginate_button') ){
+        return true;
+      }else{
+        return false;
+      }
+    }
+
+    $(document).ajaxComplete(function(){
+      unmask();
+    });
+    $(document).on('click', 'a', function(){
+      if (skipMask($(this))){
+        return;
+      }else{
+        mask('Loading');
+      }
+    });
+    $(document).on('click', 'input.green', function(){
+      if (skipMask($(this))){
+        return;
+      }else{
+        mask('Loading');
+      }
+    });
+  </script>
+</html>
